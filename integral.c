@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 #include "function.h"
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 	pid_t pid;
 	int **fd; // Nx2 array of read and write addresses of each pipe
 	double width, res = 0, temp;
+	int status;
 
 	// parse arguments
 
@@ -67,17 +69,17 @@ int main(int argc, char *argv[])
 			res = integrate(L, L + width, K);
 			write(fd[i][WRITE_END], (char *) &res, BUF_SIZE);
 			close(fd[i][WRITE_END]);
-			printf("Child %d terminated\n", i);
+			// printf("Child %d terminated\n", i);
 			exit(0); // child need not execute any further code
 		}
-		printf("Child %d created\n", i); // delete this later
+		// printf("Child %d created\n", i); // delete this later
 		close(fd[i][WRITE_END]);
 		L += width;
 	}
 
 	// wait out each child process
 	for (i = 0; i < N; ++i)
-		wait();
+		wait(&status);
 
 	// compute total and report
 	res = 0;
@@ -86,9 +88,9 @@ int main(int argc, char *argv[])
 		read(fd[i][READ_END], (char *) &temp, BUF_SIZE);
 		close(fd[i][READ_END]);
 		res += temp;
-		printf("Child %d returned %f\n", i, temp);
+		// printf("Child %d returned %f\n", i, temp);
 	}
-	printf("Answer: %f\n", res);
+	printf("%f\n", res);
 
 	// frees
 	for (i = 0; i < N; ++i)
