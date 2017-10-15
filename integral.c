@@ -12,8 +12,8 @@
 #define READ_END  0
 #define WRITE_END 1
 
-// integrate function in interval [L,U] by dividing into K subintervals
-double integrate(double L, double U, int K);
+// integrate function in interval [L,L+width] by dividing into K subintervals
+double integrate(double L, double width, int K);
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		} else if (pid == 0) {
 			close(fd[i][READ_END]);
 			// compute integral, send
-			res = integrate(L, L + width, K);
+			res = integrate(L, width / K, K);
 			write(fd[i][WRITE_END], (char *) &res, BUF_SIZE);
 			close(fd[i][WRITE_END]);
 			// printf("Child %d terminated\n", i);
@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
 	free(fd);
 }
 
-double integrate(double L, double U, int K)
+double integrate(double L, double width, int K)
 {
-	double width = (U - L) / K, res = 0, fa, fb; // fa, fb values of f at endpoints, kept so they're not calculated twice
+	double res = 0, fa, fb; // fa, fb values of f at endpoints, kept so they're not calculated twice
 	int i;
 	for (i = 0, fa = compute_f(L); i < K; ++i, fa = fb) {
 		fb = compute_f(L + width);
