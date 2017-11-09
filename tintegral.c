@@ -28,26 +28,12 @@ int main(int argc, char *argv[])
 
 	// parse arguments
 
-	// wrong argument number
-	if (argc != 5) {
-		fprintf(stderr, "Format: integral L U K N\n");
-		return 1;
-	}
-
-	// arguments not positive integers
-	if (!(L = atoi(argv[1])) ||
-	    !(U = atoi(argv[2])) ||
-	    !(K = atoi(argv[3])) ||
-	    !(N = atoi(argv[4]))) {
-		fprintf(stderr, "Error: arguments must be positive integers.\n");
-		return 1;
-	}
-
-	// lower bound must be less than upper bound
-	if (L >= U) {
-		fprintf(stderr, "Error: lower bound %d must be less than upper bound %d\n", (int) L, (int) U);
-		return 1;
-	}
+        // CORRECTION: argument checks not necessary, assume arguments are correct
+        // First two test cases failed because atoi returns same value for 0 as for non-integer values
+	L = atoi(argv[1]);
+	U = atoi(argv[2]);
+	K = atoi(argv[3]);
+	N = atoi(argv[4]);
 
 	// width of each interval
 	width = (U - L) / N;
